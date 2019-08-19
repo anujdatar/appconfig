@@ -2,8 +2,11 @@ import path from 'path'
 import fs from 'fs'
 import envPaths from 'env-paths'
 import pkgUp from 'pkg-up'
-import assert from 'assert'
+import dotProp from 'dot-prop'
+// import assert from 'assert'
 
+// Prevent caching of this module so module.parent is always accurate
+delete require.cache[__filename]
 const parentDir = path.dirname((module.parent && module.parent.filename) || '.')
 
 // function to detect if variable is an object
@@ -42,15 +45,14 @@ class AppConfig {
     this.configPath = path.resolve(options.configDir, `${configName}${configExt}`)
 
     // define store object
-    const fileStore = this.store
-    const store = Object.assign(Object.create(null), fileStore)
-    this.validate(store)
-
-    try {
-      assert.strict.deepEqual(fileStore, store)
-    } catch (_) {
-      this.store = store
-    }
+    // const fileStore = this.store
+    // const store = Object.assign(Object.create(null), fileStore)
+    // this.validate(store)
+    // try {
+    //   assert.strict.deepEqual(fileStore, store)
+    // } catch (_) {
+    //   this.store = store
+    // }
   }
 
   validate (data) {
@@ -94,6 +96,45 @@ class AppConfig {
 
     // write config data to config file
     fs.writeFileSync(this.configPath, configData)
+  }
+
+  get size () {
+    return Object.keys(this.store).length
+  }
+
+  get (key) {
+    return key in this.store ? this.store[key] : undefined
+  }
+
+  set (key, value) {
+    // check type of key
+    if (typeof key !== 'string') {
+      throw new TypeError('Expected \'key\' to be a \'string\'')
+    }
+    // check type of key
+    const wrongValueTypes = ['undefined', 'symbol', 'function']
+    if (wrongValueTypes.includes(typeof value)) {
+      throw new TypeError(`Unsupported value type ${typeof value} for key ${key}`)
+    }
+    const store = this.store
+    dotProp.set(store, key, value)
+
+    this.store = store
+  }
+
+  has (key) {
+    // check of key:value exists in the store
+    return dotProp(this.store, key)
+  }
+
+  delete (key) {
+    const store = this.store
+    dotProp.delete(store, key)
+    this.store = store
+  }
+
+  clearConfig () {
+    this.store = Object.create(null)
   }
 }
 
