@@ -2,10 +2,15 @@ import path from 'path'
 import fs from 'fs'
 import envPaths from 'env-paths'
 import pkgUp from 'pkg-up'
+import Ajv from 'ajv'
 
 const parentDir = path.dirname((module.parent && module.parent.filename) || '.')
-console.log(parentDir)
-console.log(module.parent || 'asasa')
+
+// function to detect if variable is an object
+const isObj = (value) => {
+  const prototype = Object.getPrototypeOf(value)
+  return prototype === null || prototype === Object.getPrototypeOf({})
+}
 
 class AppConfig {
   constructor (options) {
@@ -13,11 +18,12 @@ class AppConfig {
       ...options
     }
 
-    // set project name
+    // get project name from parent package
     if (!options.projectName) {
       const pkgPath = pkgUp.sync(parentDir)
       options.projectName = pkgPath && JSON.parse(fs.readFileSync(pkgPath, 'utf-8')).name
     }
+    // if package name not found above
     if (!options.projectName) {
       throw new Error('Project name not found. Please specify `projectName` option')
     }
@@ -34,11 +40,58 @@ class AppConfig {
     const configExt = options.configExt ? `.${options.configExt}` : '.json'
     const configName = options.configName ? `.${options.configName}` : 'config'
     this.configPath = path.resolve(options.configDir, `${configName}${configExt}`)
+
+    // Json validator
+    const ajv = new Ajv()
+    this.validator = ajv.compile({ type: 'object' }) // schema = { type: 'object' }
+
+    // define store object
+    const store = this.store
+  }
+
+  jsonValidator (data) {
+    const valid = this.validator(data)
+    if (!valid) {
+      const errors = this.validator.errors.reduce((error, { dataPath, message }) =>
+        error + ` \`${dataPath.slice(1)}\` ${message};`, '')
+      throw new Error('Config schema violation:' + errors.slice(0, -1))
+    }
+  }
+
+  get store () {
+    // getter for store
+    try {
+      // check if config store file exists
+      let data = fs.readFileSync(this.configPath, 'utf8')
+
+      data = JSON.parse(data)
+      // TODO: add json validator
+      return data
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        // directory or file does not exist error
+        fs.mkdirSync(path.dirname(this.path))
+        return Object.create(null)
+      }
+      if (error.name === 'SyntaxError') {
+        // other syntax errors
+        return Object.create(null)
+      }
+      return error
+    }
+  }
+
+  set store (data) {
+    // setter for store
+    fs.mkdirSync(path.dirname(this.configPath))
+    this.validate(data)
+
+    // convert object data to json
+    const configData = JSON.stringify(data, null, '\t')
+
+    // write config data to config file
+    fs.writeFileSync(this.configPath, configData)
   }
 }
-
-// const test = new AppConfig()
-
-// console.log(test.configPath)
 
 module.exports = AppConfig
