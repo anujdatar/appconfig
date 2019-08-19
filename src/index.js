@@ -2,7 +2,7 @@ import path from 'path'
 import fs from 'fs'
 import envPaths from 'env-paths'
 import pkgUp from 'pkg-up'
-import Ajv from 'ajv'
+import assert from 'assert'
 
 const parentDir = path.dirname((module.parent && module.parent.filename) || '.')
 
@@ -41,20 +41,23 @@ class AppConfig {
     const configName = options.configName ? `.${options.configName}` : 'config'
     this.configPath = path.resolve(options.configDir, `${configName}${configExt}`)
 
-    // Json validator
-    const ajv = new Ajv()
-    this.validator = ajv.compile({ type: 'object' }) // schema = { type: 'object' }
-
     // define store object
-    const store = this.store
+    const fileStore = this.store
+    const store = Object.assign(Object.create(null), fileStore)
+    this.validate(store)
+
+    try {
+      assert.strict.deepEqual(fileStore, store)
+    } catch (_) {
+      this.store = store
+    }
   }
 
-  jsonValidator (data) {
-    const valid = this.validator(data)
+  validate (data) {
+    const valid = isObj(data)
     if (!valid) {
-      const errors = this.validator.errors.reduce((error, { dataPath, message }) =>
-        error + ` \`${dataPath.slice(1)}\` ${message};`, '')
-      throw new Error('Config schema violation:' + errors.slice(0, -1))
+      const message = 'Config file data should be a dictionary object'
+      throw new Error(message)
     }
   }
 
