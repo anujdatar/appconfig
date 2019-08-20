@@ -43,6 +43,7 @@ class AppConfig {
     const configExt = options.configExt ? `.${options.configExt}` : '.json'
     const configName = options.configName ? `.${options.configName}` : 'config'
     this.configPath = path.resolve(options.configDir, `${configName}${configExt}`)
+    console.log(this.configPath)
 
     // define store object
     // const fileStore = this.store
@@ -74,9 +75,15 @@ class AppConfig {
       return data
     } catch (error) {
       if (error.code === 'ENOENT') {
-        // directory or file does not exist error
-        fs.mkdirSync(path.dirname(this.path))
-        return Object.create(null)
+        try {
+          // directory or file does not exist error
+          fs.mkdirSync(path.dirname(this.configPath))
+          return Object.create(null)
+        } catch (error) {
+          if (error.code === 'EEXIST') {
+            return Object.create(null)
+          }
+        }
       }
       if (error.name === 'SyntaxError') {
         // other syntax errors
@@ -88,7 +95,11 @@ class AppConfig {
 
   set store (data) {
     // setter for store
-    fs.mkdirSync(path.dirname(this.configPath))
+    try {
+      fs.mkdirSync(path.dirname(this.configPath))
+    } catch (error) {
+      if (error.code === 'EEXIST') console.log('config dir exists')
+    }
     this.validate(data)
 
     // convert object data to json
