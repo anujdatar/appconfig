@@ -7,5 +7,5 @@ Node module to save app configuration files in the home folder. This module is b
 This is still in beta
 
 ```bash
-npm install @anujdatar/appconfig@next
+npm install @anujdatar/appconfig
 ```

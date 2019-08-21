@@ -8,6 +8,8 @@ import dotProp from 'dot-prop'
 // Prevent caching of this module so module.parent is always accurate
 delete require.cache[__filename]
 const parentDir = path.dirname((module.parent && module.parent.filename) || '.')
+// parentDir = path.resolve(parentDir, '..')
+console.log('conf parentDir', parentDir)
 
 // function to detect if variable is an object
 const isObj = (value) => {
@@ -21,29 +23,36 @@ class AppConfig {
       ...options
     }
 
-    // get project name from parent package
-    if (!options.projectName) {
-      const pkgPath = pkgUp.sync(parentDir)
-      options.projectName = pkgPath && JSON.parse(fs.readFileSync(pkgPath, 'utf-8')).name
-    }
-    // if package name not found above
-    if (!options.projectName) {
-      throw new Error('Project name not found. Please specify `projectName` option')
-    }
-
-    // add suffix to project name
-    const projectSuffix = options.projectSuffix ? `${options.projectSuffix}` : ''
-
-    // set configuration storage directory
     if (!options.configDir) {
+      // configDir check goes here because pkgUp below returns null on restart after install
+      // returns true only after initial install, returns false after subsequent restarts
+      // not sure what changes, caching maybe?
+
+      // get project name from parent package
+      if (!options.projectName) {
+        const pkgPath = pkgUp.sync(parentDir)
+        console.log('conf -> pkgUp pkgpath', pkgPath)
+        options.projectName = pkgPath && JSON.parse(fs.readFileSync(pkgPath, 'utf-8')).name
+      }
+      // if package name not found above
+      if (!options.projectName) {
+        throw new Error('Project name not found. Please specify `projectName` option')
+      }
+
+      // add suffix to project name
+      const projectSuffix = options.projectSuffix ? `${options.projectSuffix}` : ''
+
+      // set configuration storage directory
       options.configDir = envPaths(options.projectName, { suffix: projectSuffix }).config
+      console.log('conf configDir', options.configDir)
     }
 
     // define config file path
     const configExt = options.configExt ? `.${options.configExt}` : '.json'
     const configName = options.configName ? `.${options.configName}` : 'config'
     this.configPath = path.resolve(options.configDir, `${configName}${configExt}`)
-    console.log(this.configPath)
+    console.log('conf projName', options.projectName)
+    console.log('conf confPath', this.configPath)
 
     // define store object
     // const fileStore = this.store
@@ -98,7 +107,9 @@ class AppConfig {
     try {
       fs.mkdirSync(path.dirname(this.configPath))
     } catch (error) {
-      if (error.code === 'EEXIST') console.log('config dir exists')
+      if (!error.code === 'EEXIST') {
+        console.log('config dir exists. some other error')
+      }
     }
     this.validate(data)
 
