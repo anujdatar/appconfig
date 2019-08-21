@@ -28,8 +28,12 @@ appConfig.delete(key) // removes { key: value } from store
 
 ## Contributing
 
-use `npm run build` to compile `index.js` in `src` folder. Out put in `lib` folder.
+use `npm run build` to compile `index.js` in `src` folder. Output in `lib` folder.
 [Issues](https://github.com/anujdatar/appconfig/issues)
+
+## Related
+
+[electron-appconfig](https://github.com/anujdatar/electron-appconfig) persistent app config storage for electron apps
 
 ## License
 
