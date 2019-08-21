@@ -3,13 +3,10 @@ import fs from 'fs'
 import envPaths from 'env-paths'
 import pkgUp from 'pkg-up'
 import dotProp from 'dot-prop'
-// import assert from 'assert'
 
 // Prevent caching of this module so module.parent is always accurate
 delete require.cache[__filename]
 const parentDir = path.dirname((module.parent && module.parent.filename) || '.')
-// parentDir = path.resolve(parentDir, '..')
-console.log('conf parentDir', parentDir)
 
 // function to detect if variable is an object
 const isObj = (value) => {
@@ -31,12 +28,11 @@ class AppConfig {
       // get project name from parent package
       if (!options.projectName) {
         const pkgPath = pkgUp.sync(parentDir)
-        console.log('conf -> pkgUp pkgpath', pkgPath)
         options.projectName = pkgPath && JSON.parse(fs.readFileSync(pkgPath, 'utf-8')).name
       }
       // if package name not found above
       if (!options.projectName) {
-        throw new Error('Project name not found. Please specify `projectName` option')
+        throw new Error('Project name not found. Please specify `projectName` in options')
       }
 
       // add suffix to project name
@@ -44,32 +40,19 @@ class AppConfig {
 
       // set configuration storage directory
       options.configDir = envPaths(options.projectName, { suffix: projectSuffix }).config
-      console.log('conf configDir', options.configDir)
     }
 
     // define config file path
     const configExt = options.configExt ? `.${options.configExt}` : '.json'
     const configName = options.configName ? `.${options.configName}` : 'config'
     this.configPath = path.resolve(options.configDir, `${configName}${configExt}`)
-    console.log('conf projName', options.projectName)
-    console.log('conf confPath', this.configPath)
-
-    // define store object
-    // const fileStore = this.store
-    // const store = Object.assign(Object.create(null), fileStore)
-    // this.validate(store)
-    // try {
-    //   assert.strict.deepEqual(fileStore, store)
-    // } catch (_) {
-    //   this.store = store
-    // }
   }
 
   validate (data) {
+    // make sure data passed is a javascript dictionary object
     const valid = isObj(data)
     if (!valid) {
-      const message = 'Config file data should be a dictionary object'
-      throw new Error(message)
+      throw new Error('Config file data should be a dictionary object')
     }
   }
 
@@ -78,7 +61,6 @@ class AppConfig {
     try {
       // check if config store file exists
       let data = fs.readFileSync(this.configPath, 'utf8')
-
       data = JSON.parse(data)
       // TODO: add json validator
       return data
@@ -108,7 +90,8 @@ class AppConfig {
       fs.mkdirSync(path.dirname(this.configPath))
     } catch (error) {
       if (!error.code === 'EEXIST') {
-        console.log('config dir exists. some other error')
+        // Config dir exists, some other error
+        throw new Error(error)
       }
     }
     this.validate(data)
@@ -121,10 +104,12 @@ class AppConfig {
   }
 
   get size () {
+    // get number of keys/configs in store
     return Object.keys(this.store).length
   }
 
   get (key) {
+    // get value for key in store
     return key in this.store ? this.store[key] : undefined
   }
 
@@ -150,6 +135,7 @@ class AppConfig {
   }
 
   delete (key) {
+    // delete item from store if key exists
     const store = this.store
     dotProp.delete(store, key)
     this.store = store
