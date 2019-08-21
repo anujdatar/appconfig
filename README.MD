@@ -1,6 +1,6 @@
 # appconfig
 
-Module for persistant configuration storage node apps. This module is a simpler version of [`conf`](https://github.com/sindresorhus/conf), but is heavily based on it. Avoids use of [`write-file-atomic`](https://github.com/npm/write-file-atomic) and [`make-dir`](https://github.com/sindresorhus/make-dir) because of chown permission errors with Snaps under strict confinement. Also, written in ES6.
+Module for persistant configuration storage for node apps. This module is a simpler version of [`conf`](https://github.com/sindresorhus/conf), but is heavily based on it. Avoids use of [`write-file-atomic`](https://github.com/npm/write-file-atomic) and [`make-dir`](https://github.com/sindresorhus/make-dir) because of chown permission errors with Snaps under strict confinement. Also, written in ES6.
 
 ## Usage
 
@@ -33,7 +33,7 @@ use `npm run build` to compile `index.js` in `src` folder. Output in `lib` folde
 
 ## Related
 
-[electron-appconfig](https://github.com/anujdatar/electron-appconfig) persistent app config storage for electron apps
+[`electron-appconfig`](https://github.com/anujdatar/electron-appconfig) persistent app config storage for electron apps
 
 ## License
 
