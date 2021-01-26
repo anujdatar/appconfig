@@ -9,7 +9,7 @@ delete require.cache[__filename]
 const parentDir = path.dirname((module.parent && module.parent.filename) || '.')
 
 // function to detect if variable is an object
-const isObj = (value) => {
+const isObj = value => {
   const prototype = Object.getPrototypeOf(value)
   return prototype === null || prototype === Object.getPrototypeOf({})
 }
@@ -28,24 +28,34 @@ class AppConfig {
       // get project name from parent package
       if (!options.projectName) {
         const pkgPath = pkgUp.sync(parentDir)
-        options.projectName = pkgPath && JSON.parse(fs.readFileSync(pkgPath, 'utf-8')).name
+        options.projectName =
+          pkgPath && JSON.parse(fs.readFileSync(pkgPath, 'utf-8')).name
       }
       // if package name not found above
       if (!options.projectName) {
-        throw new Error('Project name not found. Please specify `projectName` in options')
+        throw new Error(
+          'Project name not found. Please specify `projectName` in options'
+        )
       }
 
       // add suffix to project name
-      const projectSuffix = options.projectSuffix ? `${options.projectSuffix}` : ''
+      const projectSuffix = options.projectSuffix
+        ? `${options.projectSuffix}`
+        : ''
 
       // set configuration storage directory
-      options.configDir = envPaths(options.projectName, { suffix: projectSuffix }).config
+      options.configDir = envPaths(options.projectName, {
+        suffix: projectSuffix
+      }).config
     }
 
     // define config file path
     const configExt = options.configExt ? `.${options.configExt}` : '.json'
     const configName = options.configName ? `.${options.configName}` : 'config'
-    this.configPath = path.resolve(options.configDir, `${configName}${configExt}`)
+    this.configPath = path.resolve(
+      options.configDir,
+      `${configName}${configExt}`
+    )
   }
 
   validate (data) {
@@ -116,12 +126,14 @@ class AppConfig {
   set (key, value) {
     // check type of key
     if (typeof key !== 'string') {
-      throw new TypeError('Expected \'key\' to be a \'string\'')
+      throw new TypeError("Expected 'key' to be a 'string'")
     }
     // check type of key
     const wrongValueTypes = ['undefined', 'symbol', 'function']
     if (wrongValueTypes.includes(typeof value)) {
-      throw new TypeError(`Unsupported value type ${typeof value} for key ${key}`)
+      throw new TypeError(
+        `Unsupported value type ${typeof value} for key ${key}`
+      )
     }
     const store = this.store
     dotProp.set(store, key, value)
