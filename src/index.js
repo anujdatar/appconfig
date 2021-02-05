@@ -4,9 +4,12 @@ import envPaths from 'env-paths'
 import pkgUp from 'pkg-up'
 import dotProp from 'dot-prop'
 
-// Prevent caching of this module so module.parent is always accurate
-delete require.cache[__filename]
-const parentDir = path.dirname((module.parent && module.parent.filename) || '.')
+const get_parent_module_path = () => {
+  const _moduleParent = Object.values(require.cache).filter(m =>
+    m.children.includes(module)
+  )[0]
+  return _moduleParent.path
+}
 
 // function to detect if variable is an object
 const isObj = value => {
@@ -27,7 +30,7 @@ class AppConfig {
 
       // get project name from parent package
       if (!options.projectName) {
-        const pkgPath = pkgUp.sync(parentDir)
+        const pkgPath = pkgUp.sync(get_parent_module_path())
         options.projectName =
           pkgPath && JSON.parse(fs.readFileSync(pkgPath, 'utf-8')).name
       }
