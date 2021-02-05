@@ -34,6 +34,7 @@
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
-    "prettier-standard": "^16.4.1"
+    "prettier-standard": "^16.4.1",
+    "rimraf": "^3.0.2"
   }
 }
