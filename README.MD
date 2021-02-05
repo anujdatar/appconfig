@@ -19,11 +19,13 @@ npm i @anujdatar/appconfig@next
 ```js
 const appConfig = require('@anujdatar/appconfig')
 
-appConfig.set(key, value) // adds { key: value } to the store
+const conf = new appConfig()
 
-appConfig.get(key) // returns value
+conf.set(key, value) // adds { key: value } to the store
 
-appConfig.delete(key) // removes { key: value } from store
+conf.get(key) // returns value
+
+conf.delete(key) // removes { key: value } from store
 ```
 
 ## Contributing
