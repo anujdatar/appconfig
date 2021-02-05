@@ -1,13 +1,13 @@
 {
   "name": "@anujdatar/appconfig",
-  "version": "1.1.2",
+  "version": "2.0.0-dev.0",
   "description": "persistent storage of node app configurations",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"No test specified\"",
     "clean-slate": "rimraf lib/",
+    "format": "prettier-standard --lint src/**",
     "build": "npm run clean-slate && babel src --out-dir lib",
-    "lint": "eslint --config .eslintrc.js src/**",
     "start": "node ./lib/index.js"
   },
   "keywords": [
@@ -25,22 +25,15 @@
     "url": "https://github.com/anujdatar/appconfig/issues"
   },
   "homepage": "https://github.com/anujdatar/appconfig#readme",
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "eslint": "^6.0.1",
-    "eslint-config-standard": "^13.0.1",
-    "eslint-plugin-import": "^2.18.0",
-    "eslint-plugin-node": "^9.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "rimraf": "^2.6.3"
-  },
   "dependencies": {
-    "core-js": "^3.1.4",
-    "dot-prop": "^5.1.0",
+    "dot-prop": "^6.0.1",
     "env-paths": "^2.2.0",
     "pkg-up": "^3.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "prettier-standard": "^16.4.1"
   }
 }
