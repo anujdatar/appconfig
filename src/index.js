@@ -54,6 +54,23 @@ class AppConfig {
       options.configDir,
       `${configName}${configExt}`
     )
+
+    // handle defaults
+    if (options.defaults) {
+      this.__defaults = {
+        ...options.defaults
+      }
+    }
+
+    const stored = this.store
+    const _store = Object.assign(Object.getPrototypeOf({}), options.defaults, stored)
+    this.validate(_store)
+
+    try {
+      assert.deepEqual(stored, _store)
+    } catch {
+      this.store = _store
+    }
   }
 
   validate (data) {
@@ -152,8 +169,9 @@ class AppConfig {
     this.store = store
   }
 
-  clearConfig () {
+  resetAll () {
     this.store = Object.create(null)
+    this.store = this.__defaults
   }
 }
 
