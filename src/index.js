@@ -2,7 +2,6 @@ import path from 'path'
 import fs from 'fs'
 import envPaths from 'env-paths'
 import pkgUp from 'pkg-up'
-import dotProp from 'dot-prop'
 
 const get_parent_module_path = () => {
   const _moduleParent = Object.values(require.cache).filter(m =>
@@ -24,10 +23,6 @@ class AppConfig {
     }
 
     if (!options.configDir) {
-      // configDir check goes here because pkgUp below returns null on restart after install
-      // returns true only after initial install, returns false after subsequent restarts
-      // not sure what changes, caching maybe?
-
       // get project name from parent package
       if (!options.projectName) {
         const pkgPath = pkgUp.sync(get_parent_module_path())
@@ -139,20 +134,21 @@ class AppConfig {
       )
     }
     const store = this.store
-    dotProp.set(store, key, value)
+    store[key] = value
 
     this.store = store
   }
 
   has (key) {
-    // check of key:value exists in the store
-    return dotProp(this.store, key)
+    // check if key:value exists in the store
+    return key in this.store
   }
 
   delete (key) {
     // delete item from store if key exists
     const store = this.store
-    dotProp.delete(store, key)
+    delete store[key]
+
     this.store = store
   }
 
