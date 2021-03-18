@@ -12,8 +12,7 @@ const get_parent_module_path = () => {
 
 // function to detect if variable is an object
 const isObj = value => {
-  const prototype = Object.getPrototypeOf(value)
-  return prototype === null || prototype === Object.getPrototypeOf({})
+  return Object.prototype.toString.call(value) === '[object Object]'
 }
 
 class AppConfig {
@@ -63,7 +62,7 @@ class AppConfig {
     }
 
     const stored = this.store
-    const _store = Object.assign(Object.getPrototypeOf({}), options.defaults, stored)
+    const _store = Object.assign({}, options.defaults, stored)
     this.validate(_store)
 
     try {
