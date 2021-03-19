@@ -10,9 +10,19 @@ const get_parent_module_path = () => {
   return _moduleParent.path
 }
 
-// function to detect if variable is an object
+// function to detect if variable is a dict object
 const isObj = value => {
   return Object.prototype.toString.call(value) === '[object Object]'
+}
+
+// make string into array of string, keeping words and arrays intact
+const arrayify = value => {
+  if (Array.isArray(value)) {
+    return value
+  }
+  if (typeof value == 'string') {
+    return value.split()
+  }
 }
 
 class AppConfig {
@@ -166,6 +176,16 @@ class AppConfig {
     delete store[key]
 
     this.store = store
+  }
+
+  reset (keys) {
+    keys = arrayify(keys)
+    for (const key of keys) {
+      if (key in this.__defaults) {
+        this.set(key, this.__defaults[key])
+      }
+
+    }
   }
 
   resetAll () {

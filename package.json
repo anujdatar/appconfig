@@ -1,6 +1,6 @@
 {
   "name": "@anujdatar/appconfig",
-  "version": "2.1.1-dev",
+  "version": "2.1.2-dev",
   "description": "persistent storage of node app configurations",
   "main": "lib/index.js",
   "scripts": {
