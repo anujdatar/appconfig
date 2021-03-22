@@ -204,10 +204,15 @@ class AppConfig {
   reset (keys) {
     keys = arrayify(keys)
     for (const key of keys) {
-      if (key in this.__defaults) {
-        this.set(key, this.__defaults[key])
+      if (this._accessByDotNotation) {
+        if (dotProp.has(this.__defaults, key)) {
+          this.set(key, dotProp.get(this.__defaults, key))
+        }
+      } else {
+        if (key in this.__defaults) {
+          this.set(key, this.__defaults[key])
+        }
       }
-
     }
   }
 
