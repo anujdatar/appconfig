@@ -10,6 +10,9 @@
     "build": "npm run clean-slate && babel src --out-dir lib",
     "start": "node ./lib/index.js"
   },
+  "files": [
+    "lib/"
+  ],
   "keywords": [
     "config",
     "configstore",
