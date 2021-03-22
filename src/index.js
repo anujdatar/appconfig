@@ -2,6 +2,7 @@ import path from 'path'
 import fs from 'fs'
 import envPaths from 'env-paths'
 import pkgUp from 'pkg-up'
+import dotProp from 'dot-prop'
 
 const get_parent_module_path = () => {
   const _moduleParent = Object.values(require.cache).filter(m =>
@@ -16,6 +17,8 @@ const isObj = value => {
 }
 
 // make string into array of string, keeping words and arrays intact
+// if a string is passed, returns an array with that string as the only item
+// if array is passed, returns array unchanged
 const arrayify = value => {
   if (Array.isArray(value)) {
     return value
@@ -56,9 +59,13 @@ class AppConfig {
       }).config
     }
 
+    // use dot notation to access configuration keys/properties
+    // default is true, uses dot-prop
+    this._accessByDotNotation = options.accessByDotNotation === false ? false : true
+
     // define config file path
     const configExt = options.configExt ? `.${options.configExt}` : '.json'
-    const configName = options.configName ? `.${options.configName}` : 'config'
+    const configName = options.configName ? `${options.configName}` : 'config'
     this.configPath = path.resolve(
       options.configDir,
       `${configName}${configExt}`
@@ -144,6 +151,9 @@ class AppConfig {
 
   get (key) {
     // get value for key in store
+    if (this._accessByDotNotation) {
+      return dotProp.get(this.store, key)
+    }
     return key in this.store ? this.store[key] : undefined
   }
 
@@ -160,20 +170,33 @@ class AppConfig {
       )
     }
     const store = this.store
-    store[key] = value
+
+    if (this._accessByDotNotation) {
+      dotProp.set(store, key, value)
+    } else {
+      store[key] = value
+    }
 
     this.store = store
   }
 
   has (key) {
     // check if key:value exists in the store
+    if (this._accessByDotNotation) {
+      return dotProp.has(this.store, key)
+    }
     return key in this.store
   }
 
   delete (key) {
     // delete item from store if key exists
     const store = this.store
-    delete store[key]
+
+    if (this.accessByDotNotation) {
+      dotProp.delete(store, key)
+    } else {
+      delete store[key]
+    }
 
     this.store = store
   }
