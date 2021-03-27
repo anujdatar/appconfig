@@ -37,7 +37,7 @@ class AppConfig {
     if (!options.configDir) {
       // get project name from parent package
       if (!options.projectName) {
-        const pkgPath = pkgUp.sync(get_parent_module_path())
+        const pkgPath = pkgUp.sync({cwd: get_parent_module_path()})
         options.projectName =
           pkgPath && JSON.parse(fs.readFileSync(pkgPath, 'utf-8')).name
       }
