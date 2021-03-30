@@ -61,6 +61,7 @@ config.delete(key) // removes { key: value } from store
     ```
 
 3. Adding a project suffix, if you have multiple apps named the same, or if you're creating an unofficial version of an app and want to distinguish between the two.
+    
     **projectSuffix**: default is blank
 
 4. Naming the config file: default filename is `config.json`
@@ -68,6 +69,7 @@ config.delete(key) // removes { key: value } from store
     - **configExt**: default is `.json`
 
 5. Using [dot-prop](https://github.com/sindresorhus/dot-prop) notation
+    
     **accessByDotNotation**: default `true`. If you use nested settings.
     Can be disabled by setting to `false`
 
