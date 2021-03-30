@@ -10,23 +10,66 @@ Install package
 npm i @anujdatar/appconfig
 ```
 
-For beta package, if a newer test version exists
+For beta/dev branch of package, if a newer test version exists
 
 ```bash
 npm i @anujdatar/appconfig@next
 ```
 
+### Basic usage
+
 ```js
 const appConfig = require('@anujdatar/appconfig')
 
-const conf = new appConfig()
+const config = new appConfig()
 
-conf.set(key, value) // adds { key: value } to the store
+config.set(key, value) // adds { key: value } to the store
 
-conf.get(key) // returns value
+config.get(key) // returns value
 
-conf.delete(key) // removes { key: value } from store
+config.delete(key) // removes { key: value } from store
 ```
+
+### Other options
+1. Using defaults
+    ```js
+    const appConfig = require('@anujdatar/appconfig')
+
+    const appDefaults = {
+      'foo': 'abcd',
+      'bar': 'pqrs'
+    }
+
+    const config = new appConfig({ defaults: appDefaults })
+
+    console.log(config.get('foo'))  // abcd
+
+    config.set('bar', 'wxyz')
+    console.log(config.get('bar'))  // wxyz
+
+    // resetting configs
+    config.reset('bar')  // for single property
+    // or
+    config.reset(['foo', 'bar'])  // also accepts a list of properties
+    // or reset all props at once
+    config.resetAll()
+    ```
+
+2. Specify project name explicitly
+    ```js
+    const config = new appConfig({ projectName: 'my-project' })
+    ```
+
+3. Adding a project suffix, if you have multiple apps named the same, or if you're creating an unofficial version of an app and want to distinguish between the two.
+    **projectSuffix**: default is blank
+
+4. Naming the config file: default filename is `config.json`
+    - **configName**: default is `config`
+    - **configExt**: default is `.json`
+
+5. Using [dot-prop](https://github.com/sindresorhus/dot-prop) notation
+    **accessByDotNotation**: default `true`. If you use nested settings.
+    Can be disabled by setting to `false`
 
 ## Contributing
 
@@ -35,7 +78,7 @@ use `npm run build` to compile `index.js` in `src` folder. Output in `lib` folde
 
 ## Related
 
-[`electron-appconfig`](https://github.com/anujdatar/electron-appconfig) persistent app config storage for electron apps
+Deprecated and not required anymore: [`electron-appconfig`](https://github.com/anujdatar/electron-appconfig) persistent app config storage for electron apps. Old package that used the old `electron.remote`, which is deprecated in the new electron. Makes the app slower, and can be a security concern is used incorrectly.
 
 ## License
 
