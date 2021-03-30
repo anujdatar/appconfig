@@ -38,7 +38,13 @@ class AppConfig {
       // get project name from parent package
       if (!options.projectName) {
         const pkgPath = pkgUp.sync({cwd: get_parent_module_path()})
+        // product name detection in case your application package.json has a different productName
+        // common with Electron app packaged by electron builder
         options.projectName =
+          pkgPath && JSON.parse(fs.readFileSync(pkgPath, 'utf-8')).productName
+      }
+      if (!options.projectName) {
+        options.projectName = 
           pkgPath && JSON.parse(fs.readFileSync(pkgPath, 'utf-8')).name
       }
       // if package name not found above
