@@ -2,7 +2,11 @@
   "name": "@anujdatar/appconfig",
   "version": "3.0.0",
   "description": "persistent storage of node app configurations",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "test": "echo \"No test specified\"",
     "clean-slate": "rimraf lib/",
