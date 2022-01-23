@@ -1,19 +1,17 @@
 {
   "name": "@anujdatar/appconfig",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "persistent storage of node app configurations",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"No test specified\"",
     "clean-slate": "rimraf lib/",
-    "format": "prettier-standard --lint src/**",
-    "build": "npm run clean-slate && babel src --out-dir lib",
+    "build": "npm run clean-slate && tsc",
     "start": "node ./lib/index.js"
   },
-  "files": [
-    "lib/"
-  ],
   "keywords": [
+    "app configuration",
+    "config storage",
     "config",
     "configstore",
     "appconfig"
